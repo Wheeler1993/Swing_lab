@@ -1,7 +1,10 @@
 
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -20,6 +23,7 @@ public class CaesarFrame extends JFrame {
 	/**
 	 * 
 	 */
+	boolean isInputFocused;
 	private static final long serialVersionUID = 1L;
 	private JPanel up;
 	//private JPanel down;
@@ -33,7 +37,7 @@ public class CaesarFrame extends JFrame {
 		this.setSize(400, 110);
 		input =  new JTextField(20);
 		output =  new JTextField(20);
-		output.setEditable(false);
+		//output.setEditable(false);
 		letsCode = new JButton("Code!");
 		box = new JComboBox<String>(abc());
 		up = new JPanel();
@@ -44,7 +48,10 @@ public class CaesarFrame extends JFrame {
 		letsCode.setActionCommand("Code");
 		OKButtonActionListener lis = new OKButtonActionListener();
 		InputFieldKeyListener lis1 = new InputFieldKeyListener();
-		input.createDefaultModel().addDocumentListener(lis1);
+		IsFocused isfo = new IsFocused();
+		input.addFocusListener(isfo);
+		input.getDocument().addDocumentListener(lis1);
+		
 		letsCode.addActionListener(lis);
 		up.add(box);
 		up.add(input);
@@ -70,7 +77,7 @@ public class CaesarFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(e.getActionCommand().equals("Code")){
-				output.setText(Caesar.caesarCode(input.getText(), (char)(box.getSelectedIndex()+'A')));
+				input.setText(Caesar.caesarDeCode(output.getText(), (char)(box.getSelectedIndex()+'A')));
 			}
 		}
 		
@@ -89,13 +96,37 @@ public class CaesarFrame extends JFrame {
 		@Override
 		public void insertUpdate(DocumentEvent arg0) {
 			// TODO Auto-generated method stub
+			if(isInputFocused){
 			output.setText(Caesar.caesarCode(input.getText(), (char)(box.getSelectedIndex()+'A')));
+			}
 		}
 
 		@Override
 		public void removeUpdate(DocumentEvent arg0) {
 			// TODO Auto-generated method stub
+			if(isInputFocused){
 			output.setText(Caesar.caesarCode(input.getText(), (char)(box.getSelectedIndex()+'A')));
+			}
 		}
+
+		
+	}
+	
+	class IsFocused implements FocusListener{
+
+		@Override
+		public void focusGained(FocusEvent e) {
+			// TODO Auto-generated method stub
+			isInputFocused = true;
+			System.out.println("gained");
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			isInputFocused = false;
+			System.out.println("lost");
+		}
+		
 	}
 }
